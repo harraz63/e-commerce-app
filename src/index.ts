@@ -28,7 +28,6 @@ app.use((req, res, next) => {
 app.use(cors(corsOptions));
 app.options("/", cors(corsOptions));
 
-
 // Your routes
 app.use("/api/auth", controllers.authController);
 // app.use("/api/users", controllers.profileController);
@@ -69,6 +68,6 @@ app.use(
 );
 
 const port: number | string = process.env.PORT || 3000;
-app.listen(port, () => {
+app.listen(3000, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${port}`);
 });
