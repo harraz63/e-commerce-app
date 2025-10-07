@@ -22,23 +22,20 @@ export interface IUser extends Document {
   paymentMethods: (Types.ObjectId | IPaymentMethod)[];
   wishlist: (Types.ObjectId | IProduct)[];
   gender: GenderEnum;
-  DOB?: Date;
   provider: ProviderEnum;
   googleId?: string;
   isVerified?: boolean;
   age?: number;
   isConfirmed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IAddress {
   user: Types.ObjectId | IUser;
-  firstName: string;
-  lastName: string;
   street: string;
   city: string;
   contry: string;
-  phone: string;
-  email: string;
 }
 
 export interface IPaymentMethod {

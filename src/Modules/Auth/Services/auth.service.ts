@@ -19,7 +19,6 @@ import {
   encrypt,
   generateHash,
   generateToken,
-  getAge,
   NotFoundException,
   parseExpiry,
   SuccessResponse,
@@ -47,7 +46,7 @@ class AuthService {
       password,
       phone,
       gender,
-      DOB,
+      age
     }: Partial<IUser> = req.body;
 
     // Check On Email
@@ -58,8 +57,6 @@ class AuthService {
     const encryptedPhone = encrypt(phone as string);
     // Hash Password
     const hashedPassword = generateHash(password as string);
-    // Calculate User Age From DOB
-    const age = getAge(DOB);
 
     // OTP Logic
     const otp = uniqueString();
@@ -72,7 +69,6 @@ class AuthService {
       password: hashedPassword,
       phone: encryptedPhone,
       gender,
-      DOB,
       age,
     });
 

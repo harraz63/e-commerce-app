@@ -30,7 +30,7 @@ app.options("/", cors(corsOptions));
 
 // Your routes
 app.use("/api/auth", controllers.authController);
-// app.use("/api/users", controllers.profileController);
+app.use("/api/profile", controllers.profileController);
 // app.use("/api/products", controllers.productsController);
 // app.use("/api/categories", controllers.categoriesController);
 // app.use("/api/cart", controllers.cartController);
@@ -48,14 +48,16 @@ app.use(
     res: Response,
     next: NextFunction
   ) => {
-    console.error("Global Error Handler:", err);
-
     if (err instanceof HttpException) {
-      res.status(err.statusCode).json(
-        FailedResponse(err.message, err.statusCode, {
-          message: err.message,
-        })
-      );
+      res
+        .status(err.statusCode)
+        .json(
+          FailedResponse(
+            err.message,
+            err.statusCode,
+            err.error || { message: err.message }
+          )
+        );
     } else {
       res.status(500).json(
         FailedResponse("Something Went Wrong!", 500, {

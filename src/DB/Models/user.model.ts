@@ -51,9 +51,6 @@ const userSchema = new mongoose.Schema<IUser>(
       enum: GenderEnum,
       default: GenderEnum.OTHER,
     },
-    DOB: {
-      type: Date,
-    },
     provider: {
       type: String,
       enum: ProviderEnum,

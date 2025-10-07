@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { IUser } from "../../Common";
 import { BaseRepository } from "./base.repository";
 
@@ -13,7 +13,7 @@ export class UserRepository extends BaseRepository<IUser> {
   }
 
   //Find User By Id
-  async findUserById(id: string): Promise<IUser | null> {
+  async findUserById(id: mongoose.Types.ObjectId): Promise<IUser | null> {
     return await this._userModel.findById(id);
   }
 

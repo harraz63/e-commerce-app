@@ -1,11 +1,16 @@
 import { Router } from "express";
 import authService from "./Services/auth.service";
-import { authentication } from "../../Middlewares";
+import { authentication, validationMiddleware } from "../../Middlewares";
+import { SignUpSchemaValidator } from "../../Validators";
 
 const authController = Router();
 
 // Register
-authController.post("/register", authService.register);
+authController.post(
+  "/register",
+  validationMiddleware({ body: SignUpSchemaValidator }),
+  authService.register
+);
 
 // Register By Gmail
 authController.post("/register-gmail", authService.registerByGmail);

@@ -6,14 +6,6 @@ const addressSchema = new mongoose.Schema<IAddress>({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
   street: {
     type: String,
     reqired: true,
@@ -22,12 +14,17 @@ const addressSchema = new mongoose.Schema<IAddress>({
     type: String,
     reqired: true,
   },
-  phone: {
+  contry: {
     type: String,
     reqired: true,
   },
-  email: String,
 });
+
+// Prevent Duplicate Addresses For Same User
+addressSchema.index(
+  { user: 1, street: 1, city: 1, contry: 1 },
+  { unique: true }
+);
 
 const AddressModel = mongoose.model<IAddress>("Address", addressSchema);
 

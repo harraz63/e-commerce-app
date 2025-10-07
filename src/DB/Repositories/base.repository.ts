@@ -32,15 +32,39 @@ export abstract class BaseRepository<T> {
     return await this.model.findByIdAndDelete(id);
   }
 
-  updateOneDocument() {}
+  async updateOneDocument(filters: FilterQuery<T>, document: Partial<T>) {
+    return await this.model.updateOne(filters, document);
+  }
 
-  deleteOneDocument() {}
+  async deleteOneDocument(filters: FilterQuery<T>) {
+    return await this.model.deleteOne(filters);
+  }
 
-  deleteMultipleDocuments() {}
+  async deleteMultipleDocuments(filters: FilterQuery<T>) {
+    return await this.model.deleteMany(filters);
+  }
 
-  findAndUpdateDocument() {}
+  async findAndUpdateDocument(filters: FilterQuery<T>, document: Partial<T>) {
+    return await this.model.findOneAndUpdate(filters, document);
+  }
 
-  findAndDeleteDocument() {}
+  async findAndDeleteDocument(filters: FilterQuery<T>) {
+    return await this.model.findOneAndDelete(filters);
+  }
 
-  findDocuments() {}
+  async findDocuments(filters: FilterQuery<T>) {
+    return await this.model.find(filters);
+  }
+
+  async findByIdAndUpdateDocument(
+    id: mongoose.Types.ObjectId,
+    document: Partial<T>,
+    options?: QueryOptions<T>
+  ) {
+    return await this.model.findByIdAndUpdate(id, document, options);
+  }
+
+  async findByIdAndDeleteDocument(id: mongoose.Types.ObjectId) {
+    return await this.model.findByIdAndDelete(id);
+  }
 }
