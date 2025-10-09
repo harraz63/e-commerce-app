@@ -8,26 +8,29 @@ import cors from "cors";
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 
 dbConnection();
 
 // For Fucken Cors
-const whitelist = ["http://localhost:4200"];
-const corsOptions = {
-  origin: (origin: string | undefined, callback: any) => {
-    if (!origin || whitelist.includes(origin)) callback(null, true);
-    else callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-};
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
-  next();
-});
-app.use(cors(corsOptions));
-app.options("/", cors(corsOptions));
+// const whitelist = ["http://localhost:4200"];
+// const corsOptions = {
+//   origin: (origin: string | undefined, callback: any) => {
+//     if (!origin || whitelist.includes(origin)) callback(null, true);
+//     else callback(new Error("Not allowed by CORS"));
+//   },
+//   credentials: true,
+// };
+// app.use((req, res, next) => {
+//   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+//   res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
+//   next();
+// });
+// app.use(cors(corsOptions));
+// app.options("/", cors(corsOptions));
+
+app.use(cors({ origin: true, credentials: true })); // For Any Domain
+app.options(/.*/, cors({ origin: true, credentials: true })); // For Any Route
 
 // Your routes
 app.use("/api/auth", controllers.authController);
