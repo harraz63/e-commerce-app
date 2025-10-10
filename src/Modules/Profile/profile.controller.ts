@@ -38,4 +38,11 @@ profileController.delete(
   profileService.deleteAddress
 );
 
+// Change Password
+profileController.put(
+  "/change-password",
+  authentication,
+  profileService.changePassword
+);
+
 export { profileController };

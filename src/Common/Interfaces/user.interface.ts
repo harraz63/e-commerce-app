@@ -2,6 +2,7 @@ import mongoose, { Document, Types } from "mongoose";
 import {
   GenderEnum,
   OtpTypesEnum,
+  PaymentGatewaysEnum,
   PaymentMethodsEnum,
   ProviderEnum,
   RoleEnum,
@@ -40,9 +41,12 @@ export interface IAddress {
 
 export interface IPaymentMethod {
   user: Types.ObjectId | IUser;
-  type: PaymentMethodsEnum;
-  cardNumber: string;
-  expiry: string;
+  gateway: PaymentGatewaysEnum;
+  paymentMethod: PaymentMethodsEnum;
+  pmId: string;
+  last4: string;
+  exp_month: string;
+  exp_year: string;
   isDefault: boolean;
 }
 

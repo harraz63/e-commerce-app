@@ -1,18 +1,35 @@
-import mongoose from "mongoose";
-import { IAddress, IRequest, IUser } from "../../../Common";
-import { AddressModel, UserModel } from "../../../DB/Models";
-import { UserRepository } from "../../../DB/Repositories";
-
-import { Request, Response } from "express";
+import {
+  IAddress,
+  IRequest,
+  IUser,
+  PaymentGatewaysEnum,
+  PaymentMethodsEnum,
+} from "../../../Common";
+import {
+  AddressModel,
+  PaymentMethodModel,
+  UserModel,
+} from "../../../DB/Models";
+import {
+  PaymentMethodRepository,
+  UserRepository,
+} from "../../../DB/Repositories";
 import {
   BadRequestException,
   NotFoundException,
   SuccessResponse,
+  compareHash,
   decrypt,
+  generateHash,
 } from "../../../Utils";
+
+import mongoose from "mongoose";
+import { Request, Response } from "express";
 
 class ProfileService {
   private userRepo: UserRepository = new UserRepository(UserModel);
+  private paymentMethodRepo: PaymentMethodRepository =
+    new PaymentMethodRepository(PaymentMethodModel);
 
   // Get Profile Data
   getProfile = async (req: Request, res: Response) => {
@@ -210,6 +227,36 @@ class ProfileService {
         deletedAddressId: addressId,
       })
     );
+  };
+
+  // Change Password
+  changePassword = async (req: Request, res: Response) => {
+    const {
+      user: { _id: userId },
+    } = (req as IRequest).loggedInUser;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword)
+      throw new BadRequestException(
+        "Old Password And New Password Are Required"
+      );
+
+    // Get The User From DB
+    const user = await this.userRepo.findUserById(userId);
+    if (!user) throw new NotFoundException("User Not Found");
+
+    // Check If Old Pass Is Right
+    const isPasswordRight = compareHash(oldPassword, user.password);
+    if (!isPasswordRight)
+      throw new BadRequestException("Old Password Is Wrong");
+
+    // Update The Password
+    const hashedNewPassword = generateHash(newPassword);
+    const updatedUser = this.userRepo.findByIdAndUpdateDocument(userId, {
+      password: hashedNewPassword,
+    });
+
+    return res.json(SuccessResponse("Password Changed Successfully", 200));
   };
 }
 

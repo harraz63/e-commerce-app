@@ -23,10 +23,15 @@ enum OtpTypesEnum {
 }
 
 enum PaymentMethodsEnum {
-  VISA = "visa",
-  MASTERCARD = "mastercard",
+  CREDIT_CARD = "credit_card",
   PAYPAL = "paypal",
   CASH = "cash",
 }
 
-export { RoleEnum, GenderEnum, ProviderEnum, OtpTypesEnum, PaymentMethodsEnum };
+enum PaymentGatewaysEnum {
+  STRIPE = "stripe",
+  PAYPAL = "paypal",
+  MOLTO = "molto",
+}
+
+export { RoleEnum, GenderEnum, ProviderEnum, OtpTypesEnum, PaymentMethodsEnum, PaymentGatewaysEnum };

@@ -6,7 +6,7 @@ export * from "./coupon.repository";
 export * from "./wishlist.repository";
 export * from "./cart.repository";
 export * from "./black-listed.repository";
-export * from "./";
+export * from "./payment-method.repository";
 
 
 

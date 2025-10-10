@@ -1,26 +1,53 @@
 import mongoose, { Schema } from "mongoose";
-import { IPaymentMethod, PaymentMethodsEnum } from "../../Common";
+import {
+  IPaymentMethod,
+  PaymentGatewaysEnum,
+  PaymentMethodsEnum,
+} from "../../Common";
 
-const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+const paymentMethodSchema = new mongoose.Schema<IPaymentMethod>(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    gateway: {
+      type: String,
+      enum: PaymentGatewaysEnum,
+      default: PaymentGatewaysEnum.STRIPE,
+      required: true,
+    },
+    pmId: {
+      type: String,
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: PaymentMethodsEnum,
+      required: true,
+    },
+    last4: {
+      type: String,
+      required: true,
+    },
+    exp_month: {
+      type: String,
+      required: true,
+    },
+    exp_year: {
+      type: String,
+      required: true,
+    },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
   },
-  type: {
-    type: String,
-    enum: PaymentMethodsEnum,
-    default: PaymentMethodsEnum.CASH,
-  },
-  cardNumber: {
-    type: String,
-    required: true,
-  },
-  expiry: {
-    type: String,
-    required: true,
-  },
-  isDefault: Boolean,
-});
+  {
+    timestamps: true,
+  }
+);
 
 const PaymentMethodModel = mongoose.model<IPaymentMethod>(
   "Payment",
