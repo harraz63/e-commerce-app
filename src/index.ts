@@ -35,8 +35,8 @@ app.options(/.*/, cors({ origin: true, credentials: true })); // For Any Route
 // Your routes
 app.use("/api/auth", controllers.authController);
 app.use("/api/profile", controllers.profileController);
+app.use("/api/categories", controllers.categoriesController);
 // app.use("/api/products", controllers.productsController);
-// app.use("/api/categories", controllers.categoriesController);
 // app.use("/api/cart", controllers.cartController);
 // app.use("/api/orders", controllers.ordersController);
 // app.use("/api/wishlist", controllers.wishlistController);
