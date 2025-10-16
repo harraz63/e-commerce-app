@@ -11,7 +11,10 @@ productController.get("/search", productService.searchByProductName);
 productController.get("/best-selling", productService.getBestSelling);
 
 // Get Related Products
-productController.get("/related-products/:productId", productService.getRelatedProducts)
+productController.get(
+  "/related-products/:productId",
+  productService.getRelatedProducts
+);
 
 // Get Products By Category (public)
 productController.get(
@@ -26,32 +29,7 @@ productController.get(
   productService.getProductDetails
 );
 
-// Update Product (protected)
-productController.put(
-  "/:productId",
-  authentication,
-  Multer().array("productPictures"),
-  productService.updateProduct
-);
-
-// Delete Product (protected)
-productController.delete(
-  "/:productId",
-  authentication,
-  productService.deleteProduct
-);
-
-// Get All Products (public)
+// Get All Products
 productController.get("/", productService.getAllProducts);
-
-// Add Product (protected)
-productController.post(
-  "/",
-  authentication,
-  Multer().array("productPictures"),
-  productService.addProduct
-);
-
-
 
 export { productController };

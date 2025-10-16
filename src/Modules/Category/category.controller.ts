@@ -6,13 +6,6 @@ import { RoleEnum } from "../../Common";
 
 const categoriesController = Router();
 
-// Add Category
-categoriesController.post(
-  "/",
-  authentication,
-  authorizationMiddleware([RoleEnum.ADMIN]),
-  categoryService.createCategory
-);
 
 // Get All Categories
 categoriesController.get("/", authentication, categoryService.getAllCategories);
