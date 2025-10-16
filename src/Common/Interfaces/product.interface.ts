@@ -24,7 +24,7 @@ export interface ICategory {
   parent: Schema.Types.ObjectId | null;
 }
 
-export interface ICart {
+export interface ICart extends Document {
   user: Schema.Types.ObjectId;
   items: [
     {

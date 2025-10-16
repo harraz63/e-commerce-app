@@ -10,3 +10,4 @@ export * from "./payment-method.model";
 export * from "./address.model"
 export * from "./coupon.model"
 export * from "./black-listed-tokens.model"
+export * from "./cart.model"

@@ -13,7 +13,12 @@ export class CartRepository extends BaseRepository<ICart> {
   }
 
   // Find Cart By User ID
-  async findCartByUser(userId: Types.ObjectId): Promise<ICart | null> {
-    return await this._cartModel.findOne({ userId });
+  async findCartByUser(id: Types.ObjectId): Promise<ICart | null> {
+    return await this._cartModel.findOne({ user: id });
+  }
+
+  // Create Cart For User
+  async createCart(id: Types.ObjectId): Promise<ICart> {
+    return await this._cartModel.create({ user: id, items: [] });
   }
 }
