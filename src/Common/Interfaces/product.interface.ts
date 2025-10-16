@@ -1,11 +1,11 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 import { DiscountTypeEnum } from "../Enums";
 import { IAddress } from "./user.interface";
 
-export interface IProduct {
+export interface IProduct extends Document {
   name: string;
   description: String;
-  images: [String];
+  imageKeys: string[];
   price: number;
   originalPrice: Number;
   colors?: [String];
@@ -18,6 +18,7 @@ export interface IProduct {
 }
 
 export interface ICategory {
+  _id?: Schema.Types.ObjectId;
   name: string;
   description: String;
   parent: Schema.Types.ObjectId | null;

@@ -1,3 +1,5 @@
 export * from "./Auth/auth.controller"
 export * from "./Profile/profile.controller"
 export * from "./Category/category.controller"
+export * from "./Product/product.controller"
+export * from "./Admin/admin.controller"

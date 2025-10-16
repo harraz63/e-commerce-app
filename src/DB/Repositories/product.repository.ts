@@ -8,29 +8,33 @@ export class ProductRepository extends BaseRepository<IProduct> {
   }
 
   // Get all products with filters, pagination, and sorting
-  async getAllProducts(
-    filters: any,
-    pagination: any,
-    sorting: any
+  async findAllProducts(
+    filters: any = {},
+    pagination: { skip?: number; limit?: number } = {},
+    sorting: any = {}
   ): Promise<IProduct[]> {
+    const skip = pagination.skip ?? 0; // default 0
+    const limit = pagination.limit ?? 10; // default 10
+
     return await this._productModel
       .find(filters)
-      .skip(pagination.skip)
-      .limit(pagination.limit)
-      .sort(sorting);
+      .skip(skip)
+      .limit(limit)
+      .sort(sorting)
+      .populate("category", "name");
   }
 
   // Get By Best Seller
-  async getBestSellerProducts(): Promise<IProduct[]> {
+  async findBestSellerProducts(): Promise<IProduct[]> {
     return await this._productModel.find({ bestSeller: true });
   }
 
   //Find Product By Id
   async findProductById(id: string): Promise<IProduct | null> {
-    return await this._productModel.findById(id);
+    return await this._productModel.findById(id).populate("category", "name");
   }
 
-  //Find Prodeuct By Name
+  //Find Product By Name
   async findProductByName(name: string): Promise<IProduct | null> {
     return await this._productModel.findOne({ name });
   }
@@ -53,5 +57,19 @@ export class ProductRepository extends BaseRepository<IProduct> {
   //Find Products By Rating
   async findProductsByRating(rating: number): Promise<IProduct[]> {
     return await this._productModel.find({ rating });
+  }
+
+  // Update Product
+  async updateProduct(
+    id: string,
+    product: Partial<IProduct>,
+    options: any
+  ): Promise<IProduct | null> {
+    return await this._productModel.findByIdAndUpdate(id, product, options);
+  }
+
+  // Add Product
+  async addProduct(product: Partial<IProduct>): Promise<IProduct> {
+    return await this._productModel.create(product);
   }
 }

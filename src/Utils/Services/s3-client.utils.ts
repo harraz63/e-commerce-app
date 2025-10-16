@@ -110,4 +110,45 @@ export class S3ClientService {
 
     return await upload.done();
   }
+
+  // Upload Multiple Files
+  async uploadMultipleFilesOnS3(files: Express.Multer.File[], key: string) {
+    const uploadedFiles = await Promise.all(
+      files.map(async (file) => {
+        const keyName = `${this.Key_folder}/${key}/${Date.now()}-${
+          file.originalname
+        }`;
+
+        const params: IPutObjectCommandInput = {
+          Bucket: process.env.AWS_BUCKET_NAME as string,
+          Key: keyName,
+          Body: fs.createReadStream(file.path),
+          ContentType: file.mimetype,
+        };
+
+        const putCommand = new PutObjectCommand(params);
+        await this.s3Client.send(putCommand);
+
+        // Get signed URL after upload
+        const signUrl = await this.getFileWithSignedUrl(keyName);
+
+        // Return file details
+        return {
+          key: keyName,
+          url: signUrl,
+        };
+      })
+    );
+
+    // Optional: clean up temp files
+    files.forEach((file) => {
+      try {
+        fs.unlinkSync(file.path);
+      } catch (err) {
+        console.error("Error deleting temp file:", err);
+      }
+    });
+
+    return uploadedFiles;
+  }
 }
