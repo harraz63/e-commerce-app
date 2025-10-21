@@ -3,6 +3,7 @@ import mongoose, {
   Model,
   ProjectionType,
   QueryOptions,
+  UpdateQuery,
 } from "mongoose";
 
 export abstract class BaseRepository<T> {
@@ -44,8 +45,8 @@ export abstract class BaseRepository<T> {
     return await this.model.deleteMany(filters);
   }
 
-  async findAndUpdateDocument(filters: FilterQuery<T>, document: Partial<T>) {
-    return await this.model.findOneAndUpdate(filters, document);
+  async findAndUpdateDocument(filters: FilterQuery<T>, document: UpdateQuery<T>, options?: QueryOptions<T>) {
+    return await this.model.findOneAndUpdate(filters, document, options);
   }
 
   async findAndDeleteDocument(filters: FilterQuery<T>) {

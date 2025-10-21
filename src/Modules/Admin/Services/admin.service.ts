@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { ICategory, IProduct, IRequest } from "../../../Common";
 import { CategoryModel, ProductModel } from "../../../DB/Models";
 import {
@@ -36,6 +37,22 @@ class adminServices {
     return res.json(
       SuccessResponse("Category Added Successfully", 200, { category })
     );
+  };
+
+  // Delete Category
+  deleteCategory = async (req: Request, res: Response) => {
+    const {
+      user: { _id: userId },
+    } = (req as IRequest).loggedInUser;
+    const { categoryId } = req.params;
+
+    if (!categoryId) throw new BadRequestException("Category ID Is Required");
+
+    await this.categoryRepo.deleteByIdDocument(
+      categoryId as unknown as Types.ObjectId
+    );
+
+    return res.json(SuccessResponse("Category Deleted Successfully", 200));
   };
 
   // Add Product

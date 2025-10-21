@@ -17,7 +17,15 @@ adminController.post(
   adminService.createCategory
 );
 
-// Add Product (protected)
+// Delete Category
+adminController.delete(
+  "/delete-category/:categoryId",
+  authentication,
+  authorizationMiddleware([RoleEnum.ADMIN]),
+  adminService.deleteCategory
+);
+
+// Add Product
 adminController.post(
   "/add-product",
   authentication,
