@@ -45,7 +45,10 @@ class ProfileService {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      phone: decrypt(user.phone),
+      phone:
+        user.phone && user.phone.includes(":")
+          ? decrypt(user.phone)
+          : user.phone,
       gender: user.gender,
       role: user.role,
       age: user.age,

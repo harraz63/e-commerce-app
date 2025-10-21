@@ -46,7 +46,7 @@ class AuthService {
       password,
       phone,
       gender,
-      age
+      age,
     }: Partial<IUser> = req.body;
 
     // Check On Email
@@ -120,6 +120,7 @@ class AuthService {
       SuccessResponse("User Registered Successfully", 201, newUser)
     );
   };
+
   // Register With Gmail
   registerByGmail = async (req: Request, res: Response) => {
     const { idToken } = req.body;
