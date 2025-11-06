@@ -25,6 +25,14 @@ adminController.delete(
   adminService.deleteCategory
 );
 
+// List All Products
+adminController.get(
+  "/list-all-products",
+  authentication,
+  authorizationMiddleware([RoleEnum.ADMIN]),
+  adminService.listAllProducts
+);
+
 // Add Product
 adminController.post(
   "/add-product",

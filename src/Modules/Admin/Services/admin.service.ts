@@ -181,6 +181,16 @@ class adminServices {
 
     return res.json(SuccessResponse("Product Deleted Successfully", 200));
   };
+
+  // List All Products
+  listAllProducts = async (req: Request, res: Response) => {
+    const products = await this.productRepo.findAllProducts();
+    if (!products) throw new NotFoundException("Products Not Found");
+
+    return res.json(
+      SuccessResponse("Products Fetched Successfully", 200, { products })
+    );
+  };
 }
 
 export default new adminServices();
