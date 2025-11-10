@@ -64,7 +64,11 @@ class productService {
   getAllProducts = async (req: Request, res: Response) => {
     const products = await this.productRepo.findAllProducts();
     if (!products || products.length === 0) {
-      throw new NotFoundException("There Are No Products");
+      return res.json(
+        SuccessResponse("Products Fetched Successfully", 200, {
+          products: [],
+        })
+      );
     }
 
     const safeProducts = await Promise.all(
@@ -102,7 +106,11 @@ class productService {
 
     const products = await this.productRepo.findProductsByCategory(categoryId);
     if (!products || products.length === 0) {
-      throw new NotFoundException("No Products Founded In This Category");
+      return res.json(
+        SuccessResponse("Category Products Fetched Successfully", 200, {
+          products: [],
+        })
+      );
     }
 
     const safeProducts = await Promise.all(
@@ -141,7 +149,11 @@ class productService {
     // Get Matching Products
     const products = await this.productRepo.findAllProducts(filter);
     if (!products || products.length === 0) {
-      throw new NotFoundException("No Products Found Matching This Name");
+      return res.json(
+        SuccessResponse("Products Fetched Successfully", 200, {
+          products: [],
+        })
+      );
     }
 
     const safeProducts = await Promise.all(
@@ -171,7 +183,11 @@ class productService {
   getBestSelling = async (req: Request, res: Response) => {
     const products = await this.productRepo.findBestSellerProducts();
     if (!products || products.length === 0) {
-      throw new NotFoundException("No Best Seller Products Found");
+      return res.json(
+        SuccessResponse("Best Seller Products Fetched Successfully", 200, {
+          products: [],
+        })
+      );
     }
 
     // Prepare Images Urls
@@ -214,7 +230,11 @@ class productService {
       _id: { $ne: productId },
     });
     if (!relatedProducts || relatedProducts.length === 0) {
-      throw new NotFoundException("No Related Products Found");
+      return res.json(
+        SuccessResponse("Related Products Fetched Successfully", 200, {
+          relatedProducts: [],
+        })
+      );
     }
 
     const safeProducts = await Promise.all(

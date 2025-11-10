@@ -126,8 +126,9 @@ class categoryService {
   // Get All Categories
   getAllCategories = async (req: Request, res: Response) => {
     const categories = await this.categoryRepo.getAllCategories();
-    if (!categories || categories.length === 0)
-      throw new NotFoundException("No Categories Found");
+    if (!categories || categories.length === 0) {
+      return res.json(SuccessResponse("Categories Found", 200, { categories: [] }));
+    }
     return res.json(SuccessResponse("Categories Found", 200, { categories }));
   };
 
