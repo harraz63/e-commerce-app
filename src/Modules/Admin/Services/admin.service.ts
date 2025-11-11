@@ -1,8 +1,9 @@
-import { Types } from "mongoose";
-import { ICategory, IProduct, IRequest } from "../../../Common";
-import { CategoryModel, ProductModel } from "../../../DB/Models";
+import mongoose, { Types } from "mongoose";
+import { ICategory, ICoupon, IProduct, IRequest } from "../../../Common";
+import { CategoryModel, CouponModel, ProductModel } from "../../../DB/Models";
 import {
   CategoryRepository,
+  CouponRepository,
   ProductRepository,
 } from "../../../DB/Repositories";
 import {
@@ -20,6 +21,7 @@ class adminServices {
   );
   private s3Client = new S3ClientService();
   private productRepo: ProductRepository = new ProductRepository(ProductModel);
+  private couponRepo: CouponRepository = new CouponRepository(CouponModel);
 
   // Create Category
   createCategory = async (req: Request, res: Response) => {
@@ -191,6 +193,42 @@ class adminServices {
       SuccessResponse("Products Fetched Successfully", 200, { products })
     );
   };
-}
 
+  // Add Coupon
+  addCoupon = async (req: Request, res: Response) => {
+    const { code, discountType, discountValue, expiryDate, isActive }: ICoupon =
+      req.body;
+
+    // Check If Coupon Is Already Exist
+    const isCouponExist = await this.couponRepo.findCouponByCode(code);
+    if (isCouponExist)
+      throw new BadRequestException("This Coupon Is Already Added");
+
+    // Add Coupon To DB
+    const coupon = await this.couponRepo.createCoupon({
+      code,
+      discountType,
+      discountValue,
+      expiryDate,
+      isActive,
+    });
+
+    return res.json(
+      SuccessResponse("Coupon Added Successfully", 200, { coupon })
+    );
+  };
+
+  // Delete Coupon
+  deleteCoupon = async (req: Request, res: Response) => {
+    const { couponId } = req.params;
+    if (!couponId) throw new BadRequestException("Coupon ID Is Required");
+
+    const deletedCoupon = await this.couponRepo.findByIdAndDeleteDocument(
+      couponId as unknown as mongoose.Types.ObjectId
+    );
+    if (!deletedCoupon) throw new NotFoundException("Coupon Not Found");
+
+    return res.json(SuccessResponse("Coupon Deleted Successfully", 200));
+  };
+}
 export default new adminServices();

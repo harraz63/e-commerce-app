@@ -59,4 +59,20 @@ adminController.delete(
   adminService.deleteProduct
 );
 
+// Add Coupon
+adminController.post(
+  "/add-coupon",
+  authentication,
+  authorizationMiddleware([RoleEnum.ADMIN]),
+  adminService.addCoupon
+);
+
+// Remove Coupon
+adminController.delete(
+  "/delete-coupon/:couponId",
+  authentication,
+  authorizationMiddleware([RoleEnum.ADMIN]),
+  adminService.deleteCoupon
+);
+
 export { adminController };

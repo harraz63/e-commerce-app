@@ -16,4 +16,10 @@ export class CouponRepository extends BaseRepository<ICoupon> {
   async findCouponByCode(code: string): Promise<ICoupon | null> {
     return await this._couponModel.findOne({ code });
   }
+
+  // Create Coupon
+  async createCoupon(coupon: ICoupon): Promise<ICoupon> {
+    return await this._couponModel.create(coupon);
+  }
+
 }
