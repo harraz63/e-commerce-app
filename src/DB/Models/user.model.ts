@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { GenderEnum, IUser, ProviderEnum, RoleEnum } from "../../Common";
+import { email } from "zod";
 
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -14,6 +15,10 @@ const userSchema = new mongoose.Schema<IUser>(
     email: {
       type: String,
       required: true,
+      index: {
+        unique: true,
+        name: "idx_email_unique",
+      },
     },
     password: {
       type: String,
@@ -68,6 +73,9 @@ const userSchema = new mongoose.Schema<IUser>(
     timestamps: true,
   }
 );
+
+userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
+userSchema.index({ email: 1, provider: 1 });
 
 const UserModel = mongoose.model<IUser>("User", userSchema);
 

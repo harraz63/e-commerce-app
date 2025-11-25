@@ -1,4 +1,4 @@
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 import { DiscountTypeEnum } from "../Enums";
 import { IAddress } from "./user.interface";
 
@@ -8,8 +8,6 @@ export interface IProduct extends Document {
   imageKeys: string[];
   price: number;
   originalPrice: Number;
-  colors?: [String];
-  sizes?: [String];
   stock: number;
   bestSeller: boolean;
   category: Schema.Types.ObjectId;
@@ -67,7 +65,7 @@ export interface IOrder {
   shippingAddress: IAddress;
 }
 
-export interface IWishlist {
-  user: Schema.Types.ObjectId;
-  products: Schema.Types.ObjectId[];
+export interface IWishlist extends Document {
+  user: Types.ObjectId;
+  products: Types.ObjectId[];
 }

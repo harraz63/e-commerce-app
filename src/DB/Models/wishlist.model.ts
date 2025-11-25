@@ -1,19 +1,23 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { IWishlist } from "../../Common";
 
 const wishlistSchema = new mongoose.Schema<IWishlist>({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
     required: true,
+    index: true,
   },
   products: [
     {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Product",
     },
   ],
 });

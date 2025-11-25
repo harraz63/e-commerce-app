@@ -4,6 +4,7 @@ import * as controllers from "./Modules/controllers.index";
 import dbConnection from "./DB/db.connection";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
+import { LoggerMiddleware } from "./Middlewares";
 
 const app = express();
 
@@ -31,6 +32,7 @@ dbConnection();
 
 app.use(cors({ origin: true, credentials: true })); // For Any Domain
 app.options(/.*/, cors({ origin: true, credentials: true })); // For Any Route
+app.use(LoggerMiddleware);
 
 // Your routes
 app.use("/api/auth", controllers.authController);
@@ -39,8 +41,8 @@ app.use("/api/categories", controllers.categoriesController);
 app.use("/api/admin", controllers.adminController);
 app.use("/api/products", controllers.productController);
 app.use("/api/cart", controllers.cartController);
+app.use("/api/wishlist", controllers.wishlistController);
 // app.use("/api/orders", controllers.ordersController);
-// app.use("/api/wishlist", controllers.wishlistController);
 // app.use("/api/contact", controllers.contactController);
 // app.use("/api/support", controllers.supportController);
 // app.use("/api/subscribe", controllers.subscribeController);

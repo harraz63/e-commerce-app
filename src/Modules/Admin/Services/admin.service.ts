@@ -60,16 +60,8 @@ class adminServices {
   // Add Product
   addProduct = async (req: Request, res: Response) => {
     const files = req.files as Express.Multer.File[];
-    let {
-      name,
-      description,
-      price,
-      originalPrice,
-      colors,
-      sizes,
-      stock,
-      category,
-    }: IProduct = req.body;
+    let { name, description, price, originalPrice, stock, category }: IProduct =
+      req.body;
 
     if (!files)
       throw new BadRequestException("Upload At least One Product Picture");
@@ -96,8 +88,6 @@ class adminServices {
       description,
       price,
       originalPrice,
-      colors,
-      sizes,
       stock,
       category,
       imageKeys: [],
@@ -119,8 +109,6 @@ class adminServices {
     productObject.originalPrice = originalPrice;
     productObject.stock = stock;
     productObject.category = category;
-    if (colors) productObject.colors = colors;
-    if (sizes) productObject.sizes = sizes;
 
     // Upload Product Pictures
     const images = await this.s3Client.uploadMultipleFilesOnS3(
@@ -141,8 +129,7 @@ class adminServices {
   // Update Product
   updateProduct = async (req: Request, res: Response) => {
     const { productId } = req.params;
-    const { name, description, price, originalPrice, colors, sizes, stock } =
-      req.body;
+    const { name, description, price, originalPrice, stock } = req.body;
 
     const product = await this.productRepo.findProductById(productId);
     if (!product) throw new NotFoundException("Product Not Found");
@@ -152,8 +139,6 @@ class adminServices {
     if (description) product.description = description;
     if (price) product.price = price;
     if (originalPrice) product.originalPrice = originalPrice;
-    if (colors) product.colors = colors;
-    if (sizes) product.sizes = sizes;
     if (stock) product.stock = stock;
 
     await product.save();

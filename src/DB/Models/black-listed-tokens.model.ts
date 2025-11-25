@@ -12,6 +12,8 @@ const blackListedSchema = new mongoose.Schema<IBlackListedToken>({
   },
 });
 
+blackListedSchema.index({ tokenId: 1 }, { unique: true });
+
 const BlackListedModel = mongoose.model<IBlackListedToken>(
   "BlackListedTokens",
   blackListedSchema

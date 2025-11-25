@@ -23,14 +23,6 @@ const productSchema = new mongoose.Schema<IProduct>({
     type: Number,
     required: true,
   },
-  colors: {
-    type: [String],
-    required: true,
-  },
-  sizes: {
-    type: [String],
-    required: true,
-  },
   stock: {
     type: Number,
     required: true,
@@ -57,8 +49,12 @@ const productSchema = new mongoose.Schema<IProduct>({
   },
 });
 
-
-
+productSchema.index({ name: "text", description: "text" });
+productSchema.index({ name: "text", description: "text" });
+productSchema.index({ price: 1 });
+productSchema.index({ rating: -1 });
+productSchema.index({ bestSeller: 1 });
+productSchema.index({ createdAt: -1 });
 
 const s3Client = new S3ClientService();
 

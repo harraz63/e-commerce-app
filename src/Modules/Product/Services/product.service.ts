@@ -44,8 +44,6 @@ class productService {
       images: productImages,
       price: product.price,
       originalPrice: product.originalPrice,
-      colors: product.colors,
-      sizes: product.sizes,
       stock: product.stock,
       isBestSeller: product.bestSeller,
       category: product.category,

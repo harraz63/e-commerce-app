@@ -28,14 +28,6 @@ class cartService {
     if (product.stock === 0)
       throw new BadRequestException("Product Is Currently Out Of Stock");
 
-    // Validate color and size if provided
-    if (color && !product.colors?.includes(color)) {
-      throw new BadRequestException("Invalid Color Selection");
-    }
-    if (size && !product.sizes?.includes(size)) {
-      throw new BadRequestException("Invalid Size Selection");
-    }
-
     // Check If User Does Not Have Cart Yet
     let cart = await this.cartRepo.findCartByUser(userId);
     if (!cart) {
