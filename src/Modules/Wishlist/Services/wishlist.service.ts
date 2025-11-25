@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { IRequest } from "../../../Common";
-import { BadRequestException, SuccessResponse } from "../../../Utils";
+import {
+  BadRequestException,
+  NotFoundException,
+  SuccessResponse,
+} from "../../../Utils";
 import {
   ProductRepository,
   WishlistRepository,
@@ -57,7 +61,28 @@ class wishlistService {
   };
 
   // Get Wishlist Data
-  getWishlist = async (req: Request, res: Response) => {};
+  getWishlist = async (req: Request, res: Response) => {
+    const {
+      user: { _id: userId },
+    } = (req as IRequest).loggedInUser;
+
+    // Get The Wishlist Date From DB
+    const wishlist = await this.wishlistRepo.findWishlistByUser(
+      userId,
+      {},
+      {
+        populate: [
+          { path: "user", select: "_id firstName lastName email" },
+          { path: "products" },
+        ],
+      }
+    );
+    if (!wishlist) throw new NotFoundException("Wishlist Not Found");
+
+    return res.json(
+      SuccessResponse("Wishlist Fetched Successfully", 200, { wishlist })
+    );
+  };
 }
 
 export default new wishlistService();
