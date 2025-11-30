@@ -28,11 +28,10 @@ export interface ICart extends Document {
     {
       product: Schema.Types.ObjectId;
       quantity: number;
-      color?: string;
-      size?: string;
       price: number;
     }
   ];
+  totalPrice: number;
   coupon?: Schema.Types.ObjectId;
 }
 
@@ -41,6 +40,7 @@ export interface ICoupon {
   discountType: DiscountTypeEnum;
   discountValue: number;
   expiryDate: Date;
+  expiresAt?: Date;
   isActive: boolean;
 }
 
@@ -50,8 +50,6 @@ export interface IOrder {
     {
       product: Schema.Types.ObjectId;
       quantity: number;
-      color?: string;
-      size?: string;
       price: number;
     }
   ];

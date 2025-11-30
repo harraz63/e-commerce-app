@@ -18,14 +18,6 @@ const cartSchema = new mongoose.Schema<ICart>(
           type: Number,
           default: 1,
         },
-        color: {
-          type: String,
-          default: null,
-        },
-        size: {
-          type: String,
-          default: null,
-        },
         price: {
           type: Number,
           required: true,
@@ -37,39 +29,25 @@ const cartSchema = new mongoose.Schema<ICart>(
       ref: "Coupon",
       default: null,
     },
+    totalPrice: {
+      type: Number,
+      default: 0, // will be recalculated before save
+    },
   },
+
   { timestamps: true }
 );
 
-// cartSchema.pre<mongoose.Query<any, any>>(/^find/, function (next) {
-//   this.populate({
-//     path: "items.product",
-//     select: "-colors -sizes -stock -reviewCount",
-//   }).populate({
-//     path: "coupon",
-//   });
-//   next();
-// });
+// Pre-save hook to calculate totalPrice
+cartSchema.pre("save", function (next) {
+  const cart = this;
 
-// const s3Client = new S3ClientService();
-// cartSchema.post(/^find/, async function (docs: any) {
-//   const documents = Array.isArray(docs) ? docs : [docs];
+  cart.totalPrice = cart.items.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
 
-//   for (const doc of documents) {
-//     if (doc?.items?.length) {
-//       for (const item of doc.items) {
-//         const product = item.product;
-//         if (product?.imageKeys?.length) {
-//           product.imageUrls = await Promise.all(
-//             product.imageKeys.map((key: string) =>
-//               s3Client.getFileWithSignedUrl(key)
-//             )
-//           );
-//         }
-//       }
-//     }
-//   }
-// });
+  next();
+});
 
 const CartModel = mongoose.model("Cart", cartSchema);
 

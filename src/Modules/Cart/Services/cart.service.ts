@@ -9,10 +9,12 @@ import {
 } from "../../../Utils";
 
 import { Schema } from "mongoose";
+import { S3ClientService } from "./../../../Utils/Services/s3-client.utils";
 
 class cartService {
   private productRepo: ProductRepository = new ProductRepository(ProductModel);
   private cartRepo: CartRepository = new CartRepository(CartModel);
+  private s3Client = new S3ClientService();
 
   // Add Product To Cart
   addProductToCart = async (req: Request, res: Response) => {
@@ -20,7 +22,6 @@ class cartService {
       user: { _id: userId },
     } = (req as IRequest).loggedInUser;
     const { productId } = req.params;
-    const { color, size } = req.body;
 
     // Get The Product And Check If Is It Avilable In The Stock
     const product = await this.productRepo.findProductById(productId);
@@ -35,12 +36,9 @@ class cartService {
       cart = await this.cartRepo.createCart(userId);
     }
 
-    // Check If Product Already Exist In Cart With Same Color/Size
+    // Check If Product Already Exist In Cart
     const existingItemIndex = cart.items.findIndex(
-      (item) =>
-        item.product.toString() === productId &&
-        item.color === (color || null) &&
-        item.size === (size || null)
+      (item) => item.product.toString() === productId
     );
 
     if (existingItemIndex > -1) {
@@ -56,8 +54,6 @@ class cartService {
       const cartItem = {
         product: product._id as Schema.Types.ObjectId,
         quantity: 1,
-        color: color || null,
-        size: size || null,
         price: product.price,
       };
       cart.items.push(cartItem);
@@ -78,17 +74,13 @@ class cartService {
       user: { _id: userId },
     } = (req as IRequest).loggedInUser;
     const { productId } = req.params;
-    const { color, size } = req.body;
 
     // Check About Item In Cart
     const cart = await this.cartRepo.findCartByUser(userId);
     if (!cart) throw new NotFoundException("Cart Not Found");
 
     const existingItemIndex = cart.items.findIndex(
-      (item) =>
-        item.product.toString() === productId.toString() &&
-        item.color === (color || null) &&
-        item.size === (size || null)
+      (item) => item.product.toString() === productId.toString()
     );
     if (existingItemIndex === -1)
       throw new NotFoundException("Product Not Found");
@@ -183,14 +175,47 @@ class cartService {
       user: { _id: userId },
     } = (req as IRequest).loggedInUser;
 
-    const cart = await this.cartRepo.findCartByUser(userId);
+    // Get The Cart With Population (Product)
+    let cart = await this.cartRepo.findCartByUser(
+      userId,
+      {},
+      {
+        select: { "items._id": 0 },
+        populate: {
+          path: "items.product",
+          select: "name description price originalPrice bestSeller imageKeys",
+        },
+      }
+    );
+
     // Create Empty Cart If Doesn't Exist
     if (!cart) {
-      await this.cartRepo.createCart(userId);
+      cart = await this.cartRepo.createCart(userId);
     }
 
+    // Convert to plain object to allow modifications
+    const cartObj = cart.toObject();
+
+    // Convert imageKeys to URLs (only first image)
+    await Promise.all(
+      cartObj.items.map(async (item: any) => {
+        if (item.product.imageKeys?.length) {
+          // Get only the first image
+          item.product.image = await this.s3Client.getFileWithSignedUrl(
+            item.product.imageKeys[0]
+          );
+        } else {
+          item.product.image = null;
+        }
+
+        delete item.product.imageKeys;
+      })
+    );
+
     return res.json(
-      SuccessResponse("Cart Details Fetched Successfully", 200, { cart })
+      SuccessResponse("Cart Details Fetched Successfully", 200, {
+        cart: cartObj,
+      })
     );
   };
 }

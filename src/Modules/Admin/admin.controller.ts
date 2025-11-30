@@ -67,7 +67,7 @@ adminController.post(
   adminService.addCoupon
 );
 
-// Remove Coupon
+// Delete Coupon
 adminController.delete(
   "/delete-coupon/:couponId",
   authentication,

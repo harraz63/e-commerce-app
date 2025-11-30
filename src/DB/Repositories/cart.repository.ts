@@ -1,6 +1,7 @@
-import { Model, Types } from "mongoose";
+import { Model, QueryOptions, Types } from "mongoose";
 import { ICart } from "../../Common";
 import { BaseRepository } from "./base.repository";
+import { ProjectionType } from "mongoose";
 
 export class CartRepository extends BaseRepository<ICart> {
   constructor(protected _cartModel: Model<ICart>) {
@@ -13,8 +14,12 @@ export class CartRepository extends BaseRepository<ICart> {
   }
 
   // Find Cart By User ID
-  async findCartByUser(id: Types.ObjectId): Promise<ICart | null> {
-    return await this._cartModel.findOne({ user: id });
+  async findCartByUser(
+    id: Types.ObjectId,
+    project?: ProjectionType<ICart>,
+    options?: QueryOptions<ICart>
+  ): Promise<ICart | null> {
+    return await this._cartModel.findOne({ user: id }, project, options);
   }
 
   // Create Cart For User
