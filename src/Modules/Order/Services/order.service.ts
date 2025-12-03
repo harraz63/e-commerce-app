@@ -8,7 +8,7 @@ import {
   SuccessResponse,
 } from "../../../Utils";
 import { Schema, Types } from "mongoose";
-import { NotFound, Type } from "@aws-sdk/client-s3";
+
 class orderService {
   private orderRepo: OrderRepository = new OrderRepository(OrderModel);
   private cartRepo: CartRepository = new CartRepository(CartModel);
@@ -81,7 +81,49 @@ class orderService {
   };
 
   // Cancel Order
-  cancelOrder = async (req: Request, res: Response) => {};
+  cancelOrder = async (req: Request, res: Response) => {
+    const {
+      user: { _id: userId },
+    } = (req as IRequest).loggedInUser;
+    const { orderId } = req.params;
+
+    const order = await this.orderRepo.findOrderById(
+      orderId as unknown as Types.ObjectId
+    );
+    if (!order || order.user.toString() !== userId.toString()) {
+      throw new BadRequestException(
+        "Order Not Founded Or You Do Not Have Permission To Access This Order"
+      );
+    }
+
+    // Check The Cancelation Period
+    if (
+      ![
+        orderStatusEnum.PENDING,
+        orderStatusEnum.PAID,
+        orderStatusEnum.PLACED,
+      ].includes(order.status as orderStatusEnum)
+    ) {
+      console.log(order.status)
+      throw new BadRequestException("You Can Not Cancel This Order");
+    }
+
+    const timeDiff = Date.now() - (order as any).createdAt?.getTime();
+    const dayDiff = timeDiff / (1000 * 3600 * 24);
+    if (dayDiff > 1) {
+      throw new BadRequestException(
+        "You Can Not Cancel This Order After 24 Hours"
+      );
+    }
+
+    // Update Order Status To Cancelation Status
+    await this.orderRepo.updateOneDocument(
+      { _id: orderId, user: userId },
+      { status: orderStatusEnum.CANCELLED }
+    );
+
+    return res.json(SuccessResponse("Order Canceled Successfully"));
+  };
 }
 
 export default new orderService();

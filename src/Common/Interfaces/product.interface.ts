@@ -56,6 +56,7 @@ export interface IOrder extends Document {
   orderDate?: Date;
   status?: orderStatusEnum;
   address: string | IAddress;
+  createdAt?: Date;
 }
 
 // For creating orders (without Document properties)

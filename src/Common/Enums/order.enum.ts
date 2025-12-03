@@ -1,11 +1,13 @@
 export enum orderStatusEnum {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  PROCESSING = "PROCESSING",
-  SHIPPED = "SHIPPED",
-  DELIVERED = "DELIVERED",
-  CANCELED = "CANCELED",
-  RETURNED = "RETURNED",
+  PENDING = "pending",
+  PLACED = "placed",
+  PREPARING = "preparing",
+  ON_WAY = "on_way",
+  DELIVERED = "delivered",
+  RETURNED = "returned",
+  CANCELLED = "cancelled",
+  REFUNDED = "refunded",
+  PAID = "paid",
 }
 
 export enum paymentMethodEnum {

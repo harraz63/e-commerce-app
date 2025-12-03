@@ -38,12 +38,16 @@ const orderSchema = new mongoose.Schema<IOrder>({
   },
   status: {
     type: String,
-    enum: orderStatusEnum,
+    enum: Object.values(orderStatusEnum),
     default: orderStatusEnum.PENDING,
   },
   address: {
     type: String,
     required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
   },
 });
 
