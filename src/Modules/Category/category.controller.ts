@@ -1,8 +1,7 @@
 import { Router } from "express";
 import categoryService from "./Services/category.service";
 import { authentication } from "../../Middlewares";
-import { authorizationMiddleware } from "../../Middlewares/authorization.middleware";
-import { RoleEnum } from "../../Common";
+
 
 const categoriesController = Router();
 

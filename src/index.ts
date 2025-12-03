@@ -42,7 +42,7 @@ app.use("/api/admin", controllers.adminController);
 app.use("/api/products", controllers.productController);
 app.use("/api/cart", controllers.cartController);
 app.use("/api/wishlist", controllers.wishlistController);
-// app.use("/api/orders", controllers.ordersController);
+app.use("/api/orders", controllers.ordersController);
 // app.use("/api/contact", controllers.contactController);
 // app.use("/api/support", controllers.supportController);
 // app.use("/api/subscribe", controllers.subscribeController);
@@ -66,6 +66,7 @@ app.use(
           )
         );
     } else {
+      console.log(err)
       res.status(500).json(
         FailedResponse("Something Went Wrong!", 500, {
           message: err.message,

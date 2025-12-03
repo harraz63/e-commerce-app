@@ -1,5 +1,5 @@
 import { Document, Schema, Types } from "mongoose";
-import { DiscountTypeEnum } from "../Enums";
+import { DiscountTypeEnum, orderStatusEnum } from "../Enums";
 import { IAddress } from "./user.interface";
 
 export interface IProduct extends Document {
@@ -44,23 +44,32 @@ export interface ICoupon {
   isActive: boolean;
 }
 
-export interface IOrder {
+// For retrieved orders (with Document properties)
+export interface IOrder extends Document {
   user: Schema.Types.ObjectId;
-  items: [
-    {
-      product: Schema.Types.ObjectId;
-      quantity: number;
-      price: number;
-    }
-  ];
-  coupon?: ICoupon;
-  totalAmount: number;
+  cart: Schema.Types.ObjectId;
+  arriveAt?: Date;
+  phone: string;
+  totalAmount?: number;
   paymentMethod: string;
-  paymentStatus: string;
   trackingNumber?: string;
-  orderDate: Date;
-  status: string;
-  shippingAddress: IAddress;
+  orderDate?: Date;
+  status?: orderStatusEnum;
+  address: string | IAddress;
+}
+
+// For creating orders (without Document properties)
+export interface IOrderCreate {
+  user: Schema.Types.ObjectId;
+  cart: Schema.Types.ObjectId;
+  phone: string;
+  paymentMethod: string;
+  address: string;
+  arriveAt?: Date;
+  totalAmount?: number;
+  trackingNumber?: string;
+  orderDate?: Date;
+  status?: orderStatusEnum;
 }
 
 export interface IWishlist extends Document {

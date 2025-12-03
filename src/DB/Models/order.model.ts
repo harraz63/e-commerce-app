@@ -1,5 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { IOrder } from "../../Common/Interfaces";
+import { orderStatusEnum, paymentMethodEnum } from "../../Common";
 
 const orderSchema = new mongoose.Schema<IOrder>({
   user: {
@@ -7,37 +8,25 @@ const orderSchema = new mongoose.Schema<IOrder>({
     ref: "User",
     required: true,
   },
-  items: [
-    {
-      product: {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
-      },
-      quantity: {
-        type: Number,
-        required: true,
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
-  coupon: {
+  cart: {
     type: Schema.Types.ObjectId,
-    ref: "Coupon",
+    ref: "Cart",
+    required: true,
+  },
+  arriveAt: {
+    type: Date,
+    default: Date.now() + 3 * 24 * 60 * 60 * 1000, // 3 days from now
+  },
+  phone: {
+    type: String,
   },
   totalAmount: {
     type: Number,
-    required: true,
   },
   paymentMethod: {
     type: String,
-    required: true,
-  },
-  paymentStatus: {
-    type: String,
+    enum: paymentMethodEnum,
+    default: paymentMethodEnum.CASH,
     required: true,
   },
   trackingNumber: {
@@ -49,11 +38,11 @@ const orderSchema = new mongoose.Schema<IOrder>({
   },
   status: {
     type: String,
-    required: true,
+    enum: orderStatusEnum,
+    default: orderStatusEnum.PENDING,
   },
-  shippingAddress: {
-    type: Schema.Types.ObjectId,
-    ref: "Address",
+  address: {
+    type: String,
     required: true,
   },
 });

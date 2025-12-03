@@ -1,24 +1,41 @@
 import { BaseRepository } from "./base.repository";
-import { IOrder } from "../../Common";
-import { Model } from "mongoose";
+import { IOrder, IOrderCreate, orderStatusEnum } from "../../Common";
+import { Model, ProjectionType, QueryOptions, Types } from "mongoose";
 
 export class OrderRepository extends BaseRepository<IOrder> {
   constructor(protected _orderModel: Model<IOrder>) {
     super(_orderModel);
   }
 
-  //Find Order By Id
-  async findOrderById(id: string): Promise<IOrder | null> {
-    return await this._orderModel.findById(id);
+  // Create Order
+  async createOrder(orderData: IOrderCreate): Promise<IOrder> {
+    return await this._orderModel.create(orderData);
   }
 
-  //Find All Order By User
-  async findAllOrderByUser(user: string): Promise<IOrder[]> {
-    return await this._orderModel.find({ user });
+  // Find Order By Id
+  async findOrderById(
+    id: Types.ObjectId,
+    project?: ProjectionType<IOrder>,
+    options?: QueryOptions<IOrder>
+  ): Promise<IOrder | null> {
+    return await this._orderModel.findById(id, project, options);
   }
 
-  //Find Orders By Status
-  async findOrdersByStatus(status: string): Promise<IOrder[]> {
-    return await this._orderModel.find({ status });
+  // Find All Order By User
+  async findAllOrderByUser(
+    user: Types.ObjectId,
+    project?: ProjectionType<IOrder>,
+    options?: QueryOptions<IOrder>
+  ): Promise<IOrder[]> {
+    return await this._orderModel.find({ user }, project, options);
+  }
+
+  // Find Orders By Status
+  async findOrdersByStatus(
+    status: orderStatusEnum,
+    project?: ProjectionType<IOrder>,
+    options?: QueryOptions<IOrder>
+  ): Promise<IOrder[]> {
+    return await this._orderModel.find({ status }, project, options);
   }
 }
