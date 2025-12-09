@@ -1,6 +1,11 @@
 import { Router } from "express";
 import authService from "./Services/auth.service";
-import { authentication, validationMiddleware } from "../../Middlewares";
+import {
+  authentication,
+  loginLimiter,
+  otpLimiter,
+  validationMiddleware,
+} from "../../Middlewares";
 import { SignUpSchemaValidator } from "../../Validators";
 
 const authController = Router();
@@ -16,13 +21,13 @@ authController.post(
 authController.post("/register-gmail", authService.registerByGmail);
 
 // Login
-authController.post("/login", authService.login);
+authController.post("/login", loginLimiter, authService.login);
 
 // LogOut
 authController.post("/logout", authentication, authService.logout);
 
 // Forget Password
-authController.post("/forgot-password", authService.forgotPassword);
+authController.post("/forgot-password", otpLimiter, authService.forgotPassword);
 
 // Reset Password
 authController.post("/reset-password", authService.resetPassword);

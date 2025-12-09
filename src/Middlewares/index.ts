@@ -3,3 +3,4 @@ export * from "./multer.middleware";
 export * from "./validation.middleware";
 export * from "./authorization.middleware";
 export * from "./logger.middleware";
+export * from "./rate-limiter.middleware"

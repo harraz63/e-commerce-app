@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { CartRepository, OrderRepository } from "../../../DB/Repositories";
 import { CartModel, OrderModel } from "../../../DB/Models";
-import { IOrder, IRequest, orderStatusEnum } from "../../../Common";
+import { IProduct, IRequest, orderStatusEnum } from "../../../Common";
 import {
   BadRequestException,
   NotFoundException,
+  S3ClientService,
+  StripeServivce,
   SuccessResponse,
 } from "../../../Utils";
 import { Schema, Types } from "mongoose";
@@ -12,6 +14,8 @@ import { Schema, Types } from "mongoose";
 class orderService {
   private orderRepo: OrderRepository = new OrderRepository(OrderModel);
   private cartRepo: CartRepository = new CartRepository(CartModel);
+  private s3Client = new S3ClientService();
+  private stripe = new StripeServivce();
 
   // Create Order
   createOrder = async (req: Request, res: Response) => {
@@ -80,6 +84,74 @@ class orderService {
     );
   };
 
+  // Pay Order
+  payOrder = async (req: Request, res: Response) => {
+    const { user } = (req as IRequest).loggedInUser;
+    const { orderId } = req.body;
+
+    // Get The Order From DB
+    const order = await this.orderRepo.findOneDocument(
+      {
+        _id: orderId,
+        user: user._id,
+        status: orderStatusEnum.PENDING,
+      },
+      {},
+      {
+        populate: [
+          {
+            path: "cart",
+            select: "_id items coupon totalPrice",
+            populate: {
+              path: "items.product",
+              select: "name price description imageKeys",
+            },
+          },
+        ],
+      }
+    );
+    if (!order) throw new NotFoundException("Order Not Found");
+
+    // Prepare The line_items
+    const line_items: any[] = await Promise.all(
+      (order.cart as any).items.map(async (product: any) => {
+        const imageUrl = await this.s3Client.getFileWithSignedUrl(
+          product.product.imageKeys[0]
+        );
+
+        return {
+          price_data: {
+            currency: "EGP",
+            product_data: {
+              name: product.product.name,
+              images: [imageUrl],
+            },
+            unit_amount: product.price * 100,
+          },
+          quantity: product.quantity,
+        };
+      })
+    );
+
+    // Create The Checkout Session
+    const checkoutSession = await this.stripe.createCheckoutSession({
+      customer_email: user.email,
+      line_items,
+      metadata: { orderId: String(order._id) },
+    });
+
+    return res.json(
+      SuccessResponse(
+        "Payment Session Created Successfully",
+        200,
+        checkoutSession
+      )
+    );
+  };
+
+  // Stripe Webhook
+  stripeWebhook = async (req: Request, res: Response) => {};
+
   // Cancel Order
   cancelOrder = async (req: Request, res: Response) => {
     const {
@@ -87,6 +159,7 @@ class orderService {
     } = (req as IRequest).loggedInUser;
     const { orderId } = req.params;
 
+    // Get The Order From DB
     const order = await this.orderRepo.findOrderById(
       orderId as unknown as Types.ObjectId
     );
@@ -104,7 +177,6 @@ class orderService {
         orderStatusEnum.PLACED,
       ].includes(order.status as orderStatusEnum)
     ) {
-      console.log(order.status)
       throw new BadRequestException("You Can Not Cancel This Order");
     }
 
@@ -121,6 +193,9 @@ class orderService {
       { _id: orderId, user: userId },
       { status: orderStatusEnum.CANCELLED }
     );
+
+    // Refund Payment
+    // await this.stripe.refundPaymant();
 
     return res.json(SuccessResponse("Order Canceled Successfully"));
   };

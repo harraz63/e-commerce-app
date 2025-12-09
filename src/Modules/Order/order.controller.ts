@@ -21,6 +21,9 @@ ordersController.get(
   orderService.getOrderDetails
 );
 
+// Pay Order
+ordersController.post("/pay", authentication, orderService.payOrder);
+
 // Cancel Order
 ordersController.post(
   "/cancel-order/:orderId",

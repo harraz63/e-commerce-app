@@ -7,5 +7,6 @@ export * from "./Services/s3-client.utils";
 export * from "./Services/send-email.utils";
 export * from "./Services/tokens.util";
 export * from "./Services/calculate-age.utils";
-export * from "./Services/tokens.util"
-export * from "./Services/timeParser"
+export * from "./Services/tokens.util";
+export * from "./Services/timeParser";
+export * from "./Services/stripe.service";
