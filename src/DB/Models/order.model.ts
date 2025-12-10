@@ -29,6 +29,9 @@ const orderSchema = new mongoose.Schema<IOrder>({
     default: paymentMethodEnum.CASH,
     required: true,
   },
+  paymentIntent: {
+    type: String
+  },
   trackingNumber: {
     type: String,
   },

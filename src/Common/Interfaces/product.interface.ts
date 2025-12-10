@@ -52,6 +52,7 @@ export interface IOrder extends Document {
   phone: string;
   totalAmount?: number;
   paymentMethod: string;
+  paymentIntent?: string;
   trackingNumber?: string;
   orderDate?: Date;
   status?: orderStatusEnum;

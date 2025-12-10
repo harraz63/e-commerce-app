@@ -24,6 +24,8 @@ ordersController.get(
 // Pay Order
 ordersController.post("/pay", authentication, orderService.payOrder);
 
+ordersController.post("/stripe-webhook", orderService.stripeWebhook);
+
 // Cancel Order
 ordersController.post(
   "/cancel-order/:orderId",

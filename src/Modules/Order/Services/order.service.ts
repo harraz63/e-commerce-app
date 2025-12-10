@@ -150,7 +150,21 @@ class orderService {
   };
 
   // Stripe Webhook
-  stripeWebhook = async (req: Request, res: Response) => {};
+  stripeWebhook = async (req: Request, res: Response) => {
+    const body = req.body;
+
+    const orderId = body.data.object.metadata.orderId;
+    const paymentIntent = body.data.object.payment_intent;
+
+    await this.orderRepo.updateOneDocument(
+      { _id: orderId },
+      {
+        status: orderStatusEnum.PAID,
+        arriveAt: new Date(),
+        paymentIntent,
+      }
+    );
+  };
 
   // Cancel Order
   cancelOrder = async (req: Request, res: Response) => {
