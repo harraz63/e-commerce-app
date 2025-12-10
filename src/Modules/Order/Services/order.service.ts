@@ -160,7 +160,6 @@ class orderService {
       { _id: orderId },
       {
         status: orderStatusEnum.PAID,
-        arriveAt: new Date(),
         paymentIntent,
       }
     );
@@ -209,7 +208,10 @@ class orderService {
     );
 
     // Refund Payment
-    // await this.stripe.refundPaymant();
+    await this.stripe.refundPaymant(
+      order.paymentIntent!,
+      "requested_by_customer"
+    );
 
     return res.json(SuccessResponse("Order Canceled Successfully"));
   };
