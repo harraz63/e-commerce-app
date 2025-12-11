@@ -19,13 +19,13 @@ const createLimiter = (windowMs: number, max: number, message: string) => {
 
       // Remove IPv6 prefix
       ip = ip.replace("::ffff:", "");
-      
+
       return `${ip}-${req.path}`;
     },
     store: new MongoStore({
       uri: process.env.DB_URL_LOCAL as string,
       collectionName: "rateLimit",
-      expireTimeMs: 15 * 60 * 1000, // 15 Minutes
+      expireTimeMs: windowMs, // 15 Minutes
     }),
   });
 };
