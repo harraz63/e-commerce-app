@@ -1,4 +1,4 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import { Request } from "express";
 // @ts-ignore
 import MongoStore from "rate-limit-mongo";
@@ -9,24 +9,15 @@ const createLimiter = (windowMs: number, max: number, message: string) => {
     windowMs,
     max,
     message,
-    keyGenerator: (req: Request) => {
-      // Get real IP from express
-      let ip =
-        (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
-        req.ip ||
-        req.socket.remoteAddress ||
-        "unknown";
-
-      // Remove IPv6 prefix
-      ip = ip.replace("::ffff:", "");
-
-      return `${ip}-${req.path}`;
-    },
+    // Simply remove the custom keyGenerator to use the default
+    // The default handles IPv4 and IPv6 correctly
     store: new MongoStore({
       uri: process.env.DB_URL_LOCAL as string,
       collectionName: "rateLimit",
-      expireTimeMs: windowMs, // 15 Minutes
+      expireTimeMs: windowMs,
     }),
+    standardHeaders: true,
+    legacyHeaders: false,
   });
 };
 
