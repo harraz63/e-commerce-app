@@ -9,8 +9,11 @@ const createLimiter = (windowMs: number, max: number, message: string) => {
     windowMs,
     max,
     message,
-    // Simply remove the custom keyGenerator to use the default
-    // The default handles IPv4 and IPv6 correctly
+    keyGenerator: (req: Request) => {
+      // Combine IP with endpoint path
+      // req.ip is already normalized by express-rate-limit's internal processing
+      return `${req.ip}-${req.path}`;
+    },
     store: new MongoStore({
       uri: process.env.DB_URL_LOCAL as string,
       collectionName: "rateLimit",
@@ -18,6 +21,8 @@ const createLimiter = (windowMs: number, max: number, message: string) => {
     }),
     standardHeaders: true,
     legacyHeaders: false,
+    // This tells express-rate-limit to validate IPv6 handling
+    validate: { xForwardedForHeader: false },
   });
 };
 
