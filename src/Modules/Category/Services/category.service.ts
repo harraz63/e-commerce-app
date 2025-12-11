@@ -1,7 +1,6 @@
 import { ICategory } from "../../../Common";
 import { CategoryModel } from "../../../DB/Models";
 import { CategoryRepository } from "../../../DB/Repositories";
-
 import { Request, Response } from "express";
 import {
   BadRequestException,
@@ -35,61 +34,6 @@ class categoryService {
 
   // Add Multiple Categories
   createCategories = async (req: Request, res: Response) => {
-    // Requst Body
-    /*
-    {
-  "categories": [
-    {
-      "name": "Woman’s Fashion",
-      "description": "Clothing, shoes, and accessories for women",
-      "parent": null
-    },
-    {
-      "name": "Men’s Fashion",
-      "description": "Clothing, shoes, and accessories for men",
-      "parent": null
-    },
-    {
-      "name": "Electronics",
-      "description": "Devices, gadgets, and accessories",
-      "parent": null
-    },
-    {
-      "name": "Home & Lifestyle",
-      "description": "Furniture, decor, and lifestyle essentials",
-      "parent": null
-    },
-    {
-      "name": "Medicine",
-      "description": "Pharmaceutical and healthcare products",
-      "parent": null
-    },
-    {
-      "name": "Sports & Outdoor",
-      "description": "Sports gear, outdoor, and fitness equipment",
-      "parent": null
-    },
-    {
-      "name": "Baby’s & Toys",
-      "description": "Baby care items and toys for kids",
-      "parent": null
-    },
-    {
-      "name": "Groceries & Pets",
-      "description": "Daily groceries and pet supplies",
-      "parent": null
-    },
-    {
-      "name": "Health & Beauty",
-      "description": "Personal care, skincare, and beauty products",
-      "parent": null
-    }
-  ]
-}
-
-    *
-    */
-
     const { categories }: { categories: ICategory[] } = req.body;
 
     if (!categories || !Array.isArray(categories) || categories.length === 0) {
@@ -125,11 +69,13 @@ class categoryService {
 
   // Get All Categories
   getAllCategories = async (req: Request, res: Response) => {
+    // Get Categories From Cache (Redis)
     const categories = await this.categoryRepo.getAllCategories();
-    if (!categories || categories.length === 0) {
-      return res.json(SuccessResponse("Categories Found", 200, { categories: [] }));
-    }
-    return res.json(SuccessResponse("Categories Found", 200, { categories }));
+    return res.json(
+      SuccessResponse("Categories Found", 200, {
+        categories,
+      })
+    );
   };
 
   // Get Category Details By ID

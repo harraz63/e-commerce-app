@@ -50,7 +50,6 @@ const productSchema = new mongoose.Schema<IProduct>({
 });
 
 productSchema.index({ name: "text", description: "text" });
-productSchema.index({ name: "text", description: "text" });
 productSchema.index({ price: 1 });
 productSchema.index({ rating: -1 });
 productSchema.index({ bestSeller: 1 });
