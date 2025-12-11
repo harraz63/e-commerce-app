@@ -1,43 +1,73 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { Request } from "express";
+// @ts-ignore
+import MongoStore from "rate-limit-mongo";
+
+// Rate Limiter Middleware With Mongo Store
+const createLimiter = (windowMs: number, max: number, message: string) => {
+  return rateLimit({
+    windowMs,
+    max,
+    message,
+    keyGenerator: (req: Request) => {
+      // Get real IP from express
+      let ip =
+        (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+        req.ip ||
+        req.socket.remoteAddress ||
+        "unknown";
+
+      // Remove IPv6 prefix
+      ip = ip.replace("::ffff:", "");
+      
+      return `${ip}-${req.path}`;
+    },
+    store: new MongoStore({
+      uri: process.env.DB_URL_LOCAL as string,
+      collectionName: "rateLimit",
+      expireTimeMs: 15 * 60 * 1000, // 15 Minutes
+    }),
+  });
+};
 
 // Global limiter – protects entire app
-export const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300,
-  message: "Too many requests, please try again later.",
-});
+export const globalLimiter = createLimiter(
+  15 * 60 * 1000, // 15 minutes
+  300,
+  "Too many requests, please try again later."
+);
 
 // Login brute-force protection
-export const loginLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5,
-  message: "Too many login attempts. Try again in 1 minute.",
-});
+export const loginLimiter = createLimiter(
+  60 * 1000, // 1 minute
+  5,
+  "Too many login attempts. Try again in 1 minute."
+);
 
 // OTP limiter
-export const otpLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 3,
-  message: "Too many OTP requests. Please wait a moment.",
-});
+export const otpLimiter = createLimiter(
+  5 * 60 * 1000,
+  3,
+  "Too many OTP requests. Please wait a moment."
+);
 
 // Search spam protection
-export const searchLimiter = rateLimit({
-  windowMs: 5 * 1000, // 5 seconds
-  max: 10,
-  message: "Too many search requests.",
-});
+export const searchLimiter = createLimiter(
+  5 * 1000, // 5 seconds
+  10,
+  "Too many search requests."
+);
 
 // Order spam prevention
-export const orderLimiter = rateLimit({
-  windowMs: 3 * 1000, // 3 seconds
-  max: 1,
-  message: "Too many orders. Slow down.",
-});
+export const orderLimiter = createLimiter(
+  3 * 1000, // 3 seconds
+  1,
+  "Too many orders. Slow down."
+);
 
 // Add To Cart limiter
-export const cartLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 20,
-  message: "Too many cart actions. Please wait.",
-});
+export const cartLimiter = createLimiter(
+  60 * 1000,
+  20,
+  "Too many cart actions. Please wait."
+);

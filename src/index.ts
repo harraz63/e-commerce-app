@@ -9,6 +9,10 @@ import helmet from "helmet";
 
 const app = express();
 
+// Enable trust proxy so Express can read the real client IP from `x-forwarded-for`
+// This is required when the app is behind Nginx, Cloudflare, or any reverse proxy
+app.set("trust proxy", true);
+
 // Security
 app.use(helmet());
 app.use(express.json());
