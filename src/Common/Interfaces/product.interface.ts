@@ -9,7 +9,7 @@ export interface IProduct extends Document {
   price: number;
   originalPrice: Number;
   stock: number;
-  bestSeller: boolean;
+  bestSeller: Number;
   category: Schema.Types.ObjectId;
   rating: Number;
   reviewCount: Number;

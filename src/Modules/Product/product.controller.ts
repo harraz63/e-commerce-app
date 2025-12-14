@@ -7,10 +7,7 @@ const productController = Router();
 // Search By Product Name (public)
 productController.get("/search", productService.searchByProductName);
 
-// Get Best Selling Products
-productController.get("/best-selling", productService.getBestSelling);
-
-// Get Related Products
+// Get Related ProductsF
 productController.get(
   "/related-products/:productId",
   productService.getRelatedProducts
@@ -22,14 +19,17 @@ productController.get(
   productService.getProductsByCategory
 );
 
+// Get All Products
+productController.get("/", productService.getAllProducts);
+
+// Get Top 10  Products By Sales Count
+productController.get("/top-10-best-seller", productService.getTop10Products);
+
 // Get Product Details (protected)
 productController.get(
   "/:productId",
   authentication,
   productService.getProductDetails
 );
-
-// Get All Products
-productController.get("/", productService.getAllProducts);
 
 export { productController };

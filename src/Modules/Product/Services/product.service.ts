@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IProduct, IRequest } from "../../../Common";
+import { IRequest } from "../../../Common";
 import {
   BadRequestException,
   NotFoundException,
@@ -177,25 +177,21 @@ class productService {
     );
   };
 
-  // Get Best Selling Products
-  getBestSelling = async (req: Request, res: Response) => {
+  // Get Top 10 Best Selling Products
+  getTop10Products = async (req: Request, res: Response) => {
     const products = await this.productRepo.findBestSellerProducts();
     if (!products || products.length === 0) {
       return res.json(
-        SuccessResponse("Best Seller Products Fetched Successfully", 200, {
+        SuccessResponse("Top 10 Best Seller Products Fetched Successfully", 200, {
           products: [],
         })
       );
     }
 
-    // Prepare Images Urls
+    // Prepare Images[0] Urls
     const safeProducts = await Promise.all(
       products.map(async (product) => {
-        const images = await Promise.all(
-          product.imageKeys.map((key) =>
-            this.s3Client.getFileWithSignedUrl(key)
-          )
-        );
+        const images = await this.s3Client.getFileWithSignedUrl(product.imageKeys[0]);
 
         const { imageKeys, ...rest } = product.toObject();
         return {

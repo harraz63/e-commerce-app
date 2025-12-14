@@ -45,7 +45,11 @@ export abstract class BaseRepository<T> {
     return await this.model.deleteMany(filters);
   }
 
-  async findAndUpdateDocument(filters: FilterQuery<T>, document: UpdateQuery<T>, options?: QueryOptions<T>) {
+  async findAndUpdateDocument(
+    filters: FilterQuery<T>,
+    document: UpdateQuery<T>,
+    options?: QueryOptions<T>
+  ) {
     return await this.model.findOneAndUpdate(filters, document, options);
   }
 
@@ -59,7 +63,7 @@ export abstract class BaseRepository<T> {
 
   async findByIdAndUpdateDocument(
     id: mongoose.Types.ObjectId,
-    document: Partial<T>,
+    document: UpdateQuery<T>,
     options?: QueryOptions<T>
   ) {
     return await this.model.findByIdAndUpdate(id, document, options);

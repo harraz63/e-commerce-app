@@ -24,9 +24,9 @@ export class ProductRepository extends BaseRepository<IProduct> {
       .populate("category", "name");
   }
 
-  // Get By Best Seller
+  // Get Top 10 Best Seller Products
   async findBestSellerProducts(): Promise<IProduct[]> {
-    return await this._productModel.find({ bestSeller: true });
+    return await this._productModel.find().sort({ bestSeller: -1 }).limit(10);
   }
 
   //Find Product By Id

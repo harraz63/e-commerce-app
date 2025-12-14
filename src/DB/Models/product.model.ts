@@ -43,9 +43,9 @@ const productSchema = new mongoose.Schema<IProduct>({
     default: 0,
   },
   bestSeller: {
-    type: Boolean,
+    type: Number,
     required: true,
-    default: false,
+    default: 0,
   },
 });
 

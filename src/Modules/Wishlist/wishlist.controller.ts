@@ -14,4 +14,11 @@ wishlistController.post(
 // Get Wishlist Data
 wishlistController.get("/list", authentication, wishlistService.getWishlist);
 
+// Delete Product From Wishlist
+wishlistController.delete(
+  "/delete-product",
+  authentication,
+  wishlistService.deleteProductFromWishlist
+);
+
 export { wishlistController };

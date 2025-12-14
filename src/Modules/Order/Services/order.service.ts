@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
-import { CartRepository, OrderRepository } from "../../../DB/Repositories";
-import { CartModel, OrderModel } from "../../../DB/Models";
+import {
+  CartRepository,
+  OrderRepository,
+  ProductRepository,
+} from "../../../DB/Repositories";
+import { CartModel, OrderModel, ProductModel } from "../../../DB/Models";
 import { IProduct, IRequest, orderStatusEnum } from "../../../Common";
 import {
   BadRequestException,
@@ -14,6 +18,7 @@ import { Schema, Types } from "mongoose";
 class orderService {
   private orderRepo: OrderRepository = new OrderRepository(OrderModel);
   private cartRepo: CartRepository = new CartRepository(CartModel);
+  private productRepo: ProductRepository = new ProductRepository(ProductModel);
   private s3Client = new S3ClientService();
   private stripe = new StripeServivce();
 
@@ -133,11 +138,22 @@ class orderService {
       })
     );
 
+    // Paid Products
+    const paidProducts = (order.cart as any).items.map((product: any) => {
+      return {
+        productId: product.product._id,
+        quantity: product.quantity,
+      };
+    });
+
     // Create The Checkout Session
     const checkoutSession = await this.stripe.createCheckoutSession({
       customer_email: user.email,
       line_items,
-      metadata: { orderId: String(order._id) },
+      metadata: {
+        orderId: String(order._id),
+        paidProducts: JSON.stringify(paidProducts),
+      },
     });
 
     return res.json(
@@ -154,6 +170,7 @@ class orderService {
     const body = req.body;
 
     const orderId = body.data.object.metadata.orderId;
+    const paidProducts = JSON.parse(body.data.object.metadata.paidProducts);
     const paymentIntent = body.data.object.payment_intent;
 
     await this.orderRepo.updateOneDocument(
@@ -162,6 +179,15 @@ class orderService {
         status: orderStatusEnum.PAID,
         paymentIntent,
       }
+    );
+
+    // Increment Sellings Number For Paid Products And Decrease Stock Amount
+    await Promise.all(
+      paidProducts.map((product: any) => {
+        this.productRepo.findByIdAndUpdateDocument(product.productId, {
+          $inc: { bestSeller: product.quantity, stock: -product.quantity },
+        });
+      })
     );
   };
 
