@@ -2,6 +2,8 @@ import "dotenv/config";
 import { FailedResponse, HttpException } from "./Utils";
 import * as controllers from "./Modules/controllers.index";
 import dbConnection from "./DB/db.connection";
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './Config/swagger';
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { cartLimiter, LoggerMiddleware, orderLimiter } from "./Middlewares";
@@ -43,6 +45,9 @@ dbConnection();
 
 // Logger
 app.use(LoggerMiddleware);
+
+// Swagger endpoint
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes With Limiters
 app.use("/api/auth", controllers.authController);
@@ -90,4 +95,6 @@ app.use(
 const port: number | string = process.env.PORT || 3000;
 app.listen(3000, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${port}`);
+  console.log(`🚀 Swagger docs on http://localhost:${port}/api-docs`)
 });
+  
